@@ -1,0 +1,18 @@
+[
+  {
+    "id": "movil",
+    "label": "Móvil"
+  },
+  {
+    "id": "casa",
+    "label": "Casa"
+  },
+  {
+    "id": "trabajo",
+    "label": "Trabajo"
+  },
+  {
+    "id": "otro",
+    "label": "Otro"
+  }
+]

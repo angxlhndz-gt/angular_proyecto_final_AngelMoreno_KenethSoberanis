@@ -1,0 +1,18 @@
+[
+  {
+    "id": "masculino",
+    "label": "Masculino"
+  },
+  {
+    "id": "femenino",
+    "label": "Femenino"
+  },
+  {
+    "id": "otro",
+    "label": "Otro"
+  },
+  {
+    "id": "prefiero-no-indicar",
+    "label": "Prefiero no indicar"
+  }
+]

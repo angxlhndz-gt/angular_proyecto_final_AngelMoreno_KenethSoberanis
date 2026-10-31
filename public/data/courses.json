@@ -1,0 +1,16 @@
+[
+  {
+    "id": "WEB101",
+    "code": "WEB101",
+    "name": "Programación Web",
+    "credits": 4,
+    "areaId": "ingenieria-sistemas"
+  },
+  {
+    "id": "BD101",
+    "code": "BD101",
+    "name": "Bases de Datos",
+    "credits": 4,
+    "areaId": "ingenieria-sistemas"
+  }
+]

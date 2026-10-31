@@ -1,0 +1,18 @@
+[
+  {
+    "id": "matutina",
+    "label": "Matutina"
+  },
+  {
+    "id": "vespertina",
+    "label": "Vespertina"
+  },
+  {
+    "id": "nocturna",
+    "label": "Nocturna"
+  },
+  {
+    "id": "fin-de-semana",
+    "label": "Fin de semana"
+  }
+]

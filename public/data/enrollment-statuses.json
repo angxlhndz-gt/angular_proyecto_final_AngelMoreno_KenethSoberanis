@@ -1,0 +1,26 @@
+[
+  {
+    "id": "borrador",
+    "label": "Borrador"
+  },
+  {
+    "id": "registrada",
+    "label": "Registrada"
+  },
+  {
+    "id": "en-revision",
+    "label": "En revisión"
+  },
+  {
+    "id": "aprobada",
+    "label": "Aprobada"
+  },
+  {
+    "id": "rechazada",
+    "label": "Rechazada"
+  },
+  {
+    "id": "cancelada",
+    "label": "Cancelada"
+  }
+]
