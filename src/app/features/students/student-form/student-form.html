@@ -2,8 +2,13 @@
   <header class="page-heading">
     <div>
       <p class="eyebrow">MÓDULO DE ESTUDIANTES</p>
-      <h1 id="student-form-title">Registrar estudiante</h1>
-      <p class="page-description">Completa los datos personales y agrega sus medios de contacto.</p>
+      @if (student()) {
+        <h1 id="student-form-title">Editar estudiante</h1>
+        <p class="page-description">Actualiza sus datos personales y medios de contacto.</p>
+      } @else {
+        <h1 id="student-form-title">Registrar estudiante</h1>
+        <p class="page-description">Completa los datos personales y agrega sus medios de contacto.</p>
+      }
     </div>
   </header>
 
@@ -33,6 +38,8 @@
           <input matInput formControlName="firstNames" autocomplete="given-name" />
           @if (form.controls.firstNames.hasError('required') && form.controls.firstNames.touched) {
             <mat-error>Ingresa al menos un nombre.</mat-error>
+          } @else if (form.controls.firstNames.hasError('pattern') && form.controls.firstNames.touched) {
+            <mat-error>El nombre no puede contener solo espacios.</mat-error>
           } @else if (form.controls.firstNames.hasError('minlength') && form.controls.firstNames.touched) {
             <mat-error>Escribe al menos dos caracteres.</mat-error>
           } @else if (form.controls.firstNames.hasError('maxlength') && form.controls.firstNames.touched) {
@@ -45,6 +52,8 @@
           <input matInput formControlName="lastNames" autocomplete="family-name" />
           @if (form.controls.lastNames.hasError('required') && form.controls.lastNames.touched) {
             <mat-error>Ingresa al menos un apellido.</mat-error>
+          } @else if (form.controls.lastNames.hasError('pattern') && form.controls.lastNames.touched) {
+            <mat-error>El apellido no puede contener solo espacios.</mat-error>
           } @else if (form.controls.lastNames.hasError('minlength') && form.controls.lastNames.touched) {
             <mat-error>Escribe al menos dos caracteres.</mat-error>
           } @else if (form.controls.lastNames.hasError('maxlength') && form.controls.lastNames.touched) {
@@ -89,6 +98,8 @@
           <textarea matInput rows="2" formControlName="address" autocomplete="street-address"></textarea>
           @if (form.controls.address.hasError('required') && form.controls.address.touched) {
             <mat-error>Ingresa la dirección.</mat-error>
+          } @else if (form.controls.address.hasError('pattern') && form.controls.address.touched) {
+            <mat-error>La dirección no puede contener solo espacios.</mat-error>
           } @else if (form.controls.address.hasError('minlength') && form.controls.address.touched) {
             <mat-error>Escribe al menos cinco caracteres.</mat-error>
           } @else if (form.controls.address.hasError('maxlength') && form.controls.address.touched) {
@@ -152,10 +163,11 @@
     </section>
 
     <footer class="form-actions">
-      <button mat-button type="button" (click)="reset()">Limpiar formulario</button>
+      <button mat-button type="button" (click)="reset()">Restablecer</button>
+      <button mat-button type="button" (click)="studentCancel.emit()">Cancelar</button>
       <button mat-flat-button color="primary" type="submit">
         <mat-icon aria-hidden="true">save</mat-icon>
-        Validar datos
+        {{ student() ? 'Guardar cambios' : 'Guardar estudiante' }}
       </button>
     </footer>
   </form>

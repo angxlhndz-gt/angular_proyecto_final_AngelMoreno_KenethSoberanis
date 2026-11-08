@@ -1,0 +1,172 @@
+@if (showForm()) {
+  <app-student-form
+    [student]="editingStudent()"
+    (studentSubmit)="saveStudent($event)"
+    (studentCancel)="closeForm()"
+  />
+} @else {
+  <section class="students-page" aria-labelledby="students-title">
+    <header class="page-heading">
+      <div>
+        <p class="eyebrow">MÓDULO DE ESTUDIANTES</p>
+        <h1 id="students-title">Estudiantes</h1>
+        <p class="page-description">
+          Consulta y administra los registros estudiantiles.
+        </p>
+      </div>
+      <button mat-flat-button type="button" class="create-button" (click)="openCreateForm()">
+        <mat-icon aria-hidden="true">person_add</mat-icon>
+        Registrar estudiante
+      </button>
+    </header>
+
+    <div class="list-toolbar">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Buscar estudiantes</mat-label>
+        <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+        <input
+          matInput
+          type="search"
+          [value]="searchTerm()"
+          (input)="updateSearch($event)"
+          placeholder="Código, nombre, correo o dirección"
+          autocomplete="off"
+        />
+        @if (searchTerm()) {
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            aria-label="Limpiar búsqueda"
+            (click)="clearSearch()"
+          >
+            <mat-icon aria-hidden="true">close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+      @if (hasLoaded()) {
+        <p class="results-count" role="status">
+          {{ filteredStudents().length }}
+          {{ filteredStudents().length === 1 ? 'estudiante' : 'estudiantes' }}
+        </p>
+      } @else {
+        <p class="results-count" role="status">Cargando datos locales…</p>
+      }
+    </div>
+
+    @if (!hasLoaded()) {
+      <section class="loading-state" role="status">Cargando estudiantes…</section>
+    } @else if (filteredStudents().length > 0) {
+      <div class="student-grid">
+        @for (student of filteredStudents(); track student.id) {
+          <article class="student-card" [attr.aria-labelledby]="'student-name-' + student.id">
+            <div class="student-card-heading">
+              <div class="student-identity">
+                <span class="student-code">{{ student.id }}</span>
+                <h2 [id]="'student-name-' + student.id">
+                  {{ student.firstNames }} {{ student.lastNames }}
+                </h2>
+              </div>
+              <span class="contact-badge">
+                <mat-icon aria-hidden="true">call</mat-icon>
+                {{ activeContactCount(student) }} activos
+              </span>
+            </div>
+
+            <a class="student-email" [href]="'mailto:' + student.email">
+              <mat-icon aria-hidden="true">mail</mat-icon>
+              {{ student.email }}
+            </a>
+
+            <div class="student-actions">
+              <button
+                mat-button
+                type="button"
+                [attr.aria-expanded]="expandedStudentId() === student.id"
+                [attr.aria-controls]="
+                  expandedStudentId() === student.id ? 'student-details-' + student.id : null
+                "
+                (click)="toggleDetails(student.id)"
+              >
+                <mat-icon aria-hidden="true">
+                  {{ expandedStudentId() === student.id ? 'expand_less' : 'expand_more' }}
+                </mat-icon>
+                {{ expandedStudentId() === student.id ? 'Ocultar' : 'Ver detalles' }}
+              </button>
+              <button mat-button type="button" (click)="openEditForm(student)">
+                <mat-icon aria-hidden="true">edit</mat-icon>
+                Editar
+              </button>
+              <button
+                mat-button
+                type="button"
+                class="delete-action"
+                (click)="confirmDelete(student)"
+              >
+                <mat-icon aria-hidden="true">delete_outline</mat-icon>
+                Eliminar
+              </button>
+            </div>
+
+            @if (expandedStudentId() === student.id) {
+              <div class="student-details" [id]="'student-details-' + student.id">
+                <dl class="details-grid">
+                  <div>
+                    <dt>Fecha de nacimiento</dt>
+                    <dd>{{ formatDate(student.birthDate) }}</dd>
+                  </div>
+                  <div>
+                    <dt>Género</dt>
+                    <dd>{{ genderLabel(student.gender) }}</dd>
+                  </div>
+                  <div class="address-detail">
+                    <dt>Dirección</dt>
+                    <dd>{{ student.address }}</dd>
+                  </div>
+                </dl>
+
+                <div class="contacts-detail">
+                  <h3>Medios de contacto</h3>
+                  @if (student.contacts.length > 0) {
+                    <ul>
+                      @for (contact of student.contacts; track $index) {
+                        <li>
+                          <span>{{ contact.number }} · {{ contactTypeLabel(contact.type) }}</span>
+                          <span
+                            class="contact-state"
+                            [class.is-inactive]="!contact.active"
+                          >
+                            {{ contact.active ? 'Activo' : 'Inactivo' }}
+                          </span>
+                        </li>
+                      }
+                    </ul>
+                  } @else {
+                    <p>No se registraron números de contacto.</p>
+                  }
+                </div>
+              </div>
+            }
+          </article>
+        }
+      </div>
+    } @else if (students().length === 0) {
+      <section class="empty-state" aria-labelledby="empty-students-title">
+        <span class="empty-icon" aria-hidden="true"><mat-icon>group_add</mat-icon></span>
+        <h2 id="empty-students-title">Aún no hay estudiantes registrados</h2>
+        <p>Registra el primer estudiante para comenzar a organizar la información académica.</p>
+        <button mat-flat-button type="button" (click)="openCreateForm()">
+          <mat-icon aria-hidden="true">person_add</mat-icon>
+          Registrar estudiante
+        </button>
+      </section>
+    } @else {
+      <section class="empty-state search-empty" aria-live="polite">
+        <span class="empty-icon" aria-hidden="true"><mat-icon>search_off</mat-icon></span>
+        <h2>No encontramos coincidencias</h2>
+        <p>Prueba con otro código, nombre, correo o dirección.</p>
+        <button mat-button type="button" (click)="clearSearch()">Limpiar búsqueda</button>
+      </section>
+    }
+  </section>
+}

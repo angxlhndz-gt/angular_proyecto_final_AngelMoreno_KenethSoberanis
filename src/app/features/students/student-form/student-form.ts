@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
   FormArray,
@@ -16,7 +24,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 
 import { CatalogOption } from '../../../core/models/catalog-option.model';
-import { Student, StudentGender, ContactType } from '../../../core/models/student.model';
+import { ContactType, Student, StudentContact, StudentGender } from '../../../core/models/student.model';
 import { CatalogService } from '../../../core/services/catalog.service';
 
 type ContactFormGroup = FormGroup<{
@@ -44,7 +52,9 @@ export class StudentForm {
   private readonly formBuilder = inject(FormBuilder).nonNullable;
   private readonly catalogService = inject(CatalogService);
 
+  readonly student = input<Student | null>(null);
   readonly studentSubmit = output<Student>();
+  readonly studentCancel = output<void>();
   protected readonly validationMessage = signal('');
   protected readonly genders = toSignal(this.catalogService.getGenders(), { initialValue: [] });
   protected readonly contactTypes = toSignal(this.catalogService.getContactTypes(), {
@@ -53,12 +63,21 @@ export class StudentForm {
 
   protected readonly form = this.formBuilder.group({
     id: ['', [Validators.required, Validators.pattern(/^EST-\d{3,}$/i)]],
-    firstNames: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(80)]],
-    lastNames: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(80)]],
+    firstNames: [
+      '',
+      [Validators.required, Validators.pattern(/\S/), Validators.minLength(2), Validators.maxLength(80)],
+    ],
+    lastNames: [
+      '',
+      [Validators.required, Validators.pattern(/\S/), Validators.minLength(2), Validators.maxLength(80)],
+    ],
     birthDate: ['', Validators.required],
     gender: this.formBuilder.control<StudentGender>('' as StudentGender, Validators.required),
     email: ['', [Validators.required, Validators.email, Validators.maxLength(120)]],
-    address: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(180)]],
+    address: [
+      '',
+      [Validators.required, Validators.pattern(/\S/), Validators.minLength(5), Validators.maxLength(180)],
+    ],
     contacts: this.formBuilder.array<ContactFormGroup>([]),
   });
 
@@ -66,14 +85,26 @@ export class StudentForm {
     return this.form.controls.contacts;
   }
 
+  constructor() {
+    effect(() => {
+      const student = this.student();
+      this.contacts.clear();
+      this.form.reset({
+        id: student?.id ?? '',
+        firstNames: student?.firstNames ?? '',
+        lastNames: student?.lastNames ?? '',
+        birthDate: student?.birthDate ?? '',
+        gender: student?.gender ?? ('' as StudentGender),
+        email: student?.email ?? '',
+        address: student?.address ?? '',
+      });
+      student?.contacts.forEach((contact) => this.contacts.push(this.createContact(contact)));
+      this.validationMessage.set('');
+    });
+  }
+
   protected addContact(): void {
-    this.contacts.push(
-      this.formBuilder.group({
-        number: ['', [Validators.required, Validators.pattern(/^[+0-9() -]{7,20}$/)]],
-        type: this.formBuilder.control<ContactType>('movil', Validators.required),
-        active: true,
-      }),
-    );
+    this.contacts.push(this.createContact());
   }
 
   protected removeContact(index: number): void {
@@ -81,6 +112,17 @@ export class StudentForm {
   }
 
   protected submit(): void {
+    this.form.patchValue({
+      id: this.form.controls.id.value.trim().toUpperCase(),
+      firstNames: this.form.controls.firstNames.value.trim(),
+      lastNames: this.form.controls.lastNames.value.trim(),
+      email: this.form.controls.email.value.trim(),
+      address: this.form.controls.address.value.trim(),
+    });
+    this.contacts.controls.forEach((contact) => {
+      contact.controls.number.setValue(contact.controls.number.value.trim());
+    });
+
     if (this.form.invalid) {
       this.validationMessage.set('');
       this.form.markAllAsTouched();
@@ -92,20 +134,33 @@ export class StudentForm {
   }
 
   protected reset(): void {
-    this.validationMessage.set('');
+    const student = this.student();
     this.form.reset({
-      id: '',
-      firstNames: '',
-      lastNames: '',
-      birthDate: '',
-      gender: '' as StudentGender,
-      email: '',
-      address: '',
+      id: student?.id ?? '',
+      firstNames: student?.firstNames ?? '',
+      lastNames: student?.lastNames ?? '',
+      birthDate: student?.birthDate ?? '',
+      gender: student?.gender ?? ('' as StudentGender),
+      email: student?.email ?? '',
+      address: student?.address ?? '',
     });
     this.contacts.clear();
+    student?.contacts.forEach((contact) => this.contacts.push(this.createContact(contact)));
+    this.validationMessage.set('');
   }
 
   protected trackOption(_index: number, option: CatalogOption): string {
     return option.id;
+  }
+
+  private createContact(contact?: StudentContact): ContactFormGroup {
+    return this.formBuilder.group({
+      number: [
+        contact?.number ?? '',
+        [Validators.required, Validators.pattern(/^[+0-9() -]{7,20}$/)],
+      ],
+      type: this.formBuilder.control<ContactType>(contact?.type ?? 'movil', Validators.required),
+      active: contact?.active ?? true,
+    });
   }
 }

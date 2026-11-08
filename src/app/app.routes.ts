@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { Home } from './features/home/home';
-import { StudentForm } from './features/students/student-form/student-form';
+import { StudentsPage } from './features/students/students-page/students-page';
 import { PagePlaceholder } from './shared/page-placeholder/page-placeholder';
 
 export const routes: Routes = [
@@ -11,7 +11,7 @@ export const routes: Routes = [
   },
   {
     path: 'estudiantes',
-    component: StudentForm,
+    component: StudentsPage,
     title: 'Estudiantes | Gestión académica',
   },
   {

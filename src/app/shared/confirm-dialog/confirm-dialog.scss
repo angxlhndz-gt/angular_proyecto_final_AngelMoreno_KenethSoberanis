@@ -1,0 +1,18 @@
+:host {
+  display: block;
+}
+
+mat-dialog-content p {
+  margin: 0;
+  color: #53627a;
+  line-height: 1.6;
+}
+
+.confirm-action {
+  background: #a83232;
+  color: #fff;
+}
+
+.confirm-action:hover {
+  background: #8f2929;
+}
