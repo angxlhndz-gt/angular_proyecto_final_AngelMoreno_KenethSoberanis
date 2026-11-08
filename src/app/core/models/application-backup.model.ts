@@ -8,3 +8,7 @@ export interface ApplicationBackup {
   students: Student[];
   enrollments: Enrollment[];
 }
+
+export type BackupValidationResult =
+  | { valid: true; data: ApplicationBackup }
+  | { valid: false; errors: string[] };
