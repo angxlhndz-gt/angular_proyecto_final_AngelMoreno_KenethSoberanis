@@ -1,59 +1,88 @@
-# Prograweb
+# Gestión académica — Proyecto final de Programación Web
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.35.
+Aplicación web para administrar estudiantes e inscripciones académicas. Está construida con Angular 20 y Angular Material. No necesita backend ni base de datos remota: los catálogos se cargan desde archivos JSON y los registros se guardan en el navegador.
 
-## Development server
+## Funciones
 
-To start a local development server, run:
+- **Estudiantes:** crear, consultar, buscar, editar y eliminar registros; agregar contactos y activar o desactivar cada uno. No permite repetir códigos ni eliminar estudiantes vinculados a inscripciones.
+- **Inscripciones:** crear y consultar inscripciones; buscar y filtrar por estudiante, período y estado; editar y cancelar. Una cancelación conserva el registro en el historial.
+- **Respaldo:** exportar estudiantes e inscripciones como un único archivo JSON versionado. La importación comprueba la estructura, los campos, los duplicados y las referencias a catálogos. Los datos existentes solo se reemplazan después de una validación correcta y de confirmar la acción.
+- **Diseño adaptable:** navegación y formularios adaptados a escritorio, tableta y teléfono.
 
-```bash
-ng serve
-```
+## Requisitos
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- Node.js y npm instalados.
+- Un navegador web actualizado.
 
-## Code scaffolding
+## Instalación y ejecución
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Desde una terminal, clona el repositorio e instala las dependencias:
 
 ```bash
-ng generate --help
+git clone https://github.com/angxlhndz-gt/angular_proyecto_final_AngelMoreno_KenethSoberanis.git
+cd angular_proyecto_final_AngelMoreno_KenethSoberanis
+npm ci
 ```
 
-## Building
-
-To build the project run:
+Inicia el servidor de desarrollo:
 
 ```bash
-ng build
+npm start
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Abre [http://localhost:4200/](http://localhost:4200/) en el navegador. Angular CLI reconstruye la aplicación cuando detecta cambios en los archivos. Para detener el servidor, presiona `Ctrl+C` en la terminal.
 
-## Running unit tests
+## Estructura del proyecto
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
+```text
+public/data/                 Catálogos JSON de cursos, períodos, estados y opciones
+src/app/core/models/         Modelos de estudiantes, inscripciones y respaldos
+src/app/core/services/       Catálogos, almacenamiento, datos y validación de respaldos
+src/app/features/home/       Página de inicio
+src/app/features/students/   Formulario y administración de estudiantes
+src/app/features/enrollments/ Formulario, consulta y administración de inscripciones
+src/app/shared/              Componentes compartidos, como el diálogo de confirmación
+src/app/app.config*.ts       Configuración de Angular y renderizado en servidor
+src/styles.scss              Tema global de Angular Material y estilos base
 ```
 
-## Running end-to-end tests
+Los formularios usan Reactive Forms. Los componentes solicitan y guardan registros mediante servicios; el acceso a `localStorage` está centralizado y protegido para que no se ejecute durante el renderizado en servidor.
 
-For end-to-end (e2e) testing, run:
+## Persistencia de datos
 
-```bash
-ng e2e
+Estudiantes e inscripciones se guardan localmente en el navegador mediante `ApplicationDataService` y `BrowserStorageService`. Los datos no se sincronizan entre navegadores ni computadoras. Usa **Exportar datos** para guardar un respaldo y conservar una copia fuera del navegador.
+
+Los catálogos se leen desde `public/data/`. Los cursos y períodos disponibles para las inscripciones dependen de esos archivos.
+
+## Demostración de exportación e importación
+
+1. Inicia la aplicación y registra al menos un estudiante en **Estudiantes**. Para demostrar las relaciones, registra también una inscripción con un período y uno o más cursos disponibles.
+2. Selecciona **Exportar datos** en la barra superior. El navegador descargará un archivo como `prograweb-respaldo-AAAA-MM-DD.json` con formato `prograweb-backup`, versión `1`, fecha de exportación, estudiantes e inscripciones.
+3. Cambia algún dato desde la aplicación —por ejemplo, registra otro estudiante— para distinguir los datos actuales del respaldo.
+4. Selecciona **Importar datos**, elige el archivo exportado y revisa el conteo que presenta la confirmación. Elige **Reemplazar datos**. Comprueba que la aplicación vuelva a mostrar los registros que contenía el respaldo.
+5. Para probar un archivo inválido, crea `respaldo-invalido.json` con este contenido. Es JSON sintácticamente válido, pero usa una versión no compatible:
+
+```json
+{
+  "format": "prograweb-backup",
+  "version": 99,
+  "exportedAt": "2026-01-01T00:00:00.000Z",
+  "students": [],
+  "enrollments": []
+}
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+6. Importa `respaldo-invalido.json`. La aplicación debe indicar que no importó el archivo. Verifica que los registros actuales sigan intactos.
 
-## Additional Resources
+## Revisión manual final del equipo
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Ambos integrantes deben revisar la aplicación en sus propios navegadores y completar la lista juntos. Usen registros de demostración y comprueben la persistencia después de recargar la página.
+
+- [ ] **Integrante 1:** revisar creación, consulta, edición, búsqueda y eliminación de estudiantes; comprobar que no se eliminen estudiantes vinculados a inscripciones.
+- [ ] **Integrante 2:** revisar creación, búsqueda, filtros, edición y cancelación de inscripciones.
+- [ ] **Ambos:** probar exportación, importación válida e inválida; confirmar que un archivo inválido no reemplaza los datos.
+- [ ] **Ambos:** revisar mensajes, confirmaciones, navegación con teclado y presentación en teléfono, tableta y escritorio.
+
+Integrante 1: ______________________________  Fecha: ______________
+
+Integrante 2: ______________________________  Fecha: ______________
