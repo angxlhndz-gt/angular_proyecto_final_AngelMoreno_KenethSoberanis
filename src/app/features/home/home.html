@@ -1,0 +1,37 @@
+<section class="welcome" aria-labelledby="welcome-title">
+  <p class="eyebrow">INICIO</p>
+  <h1 id="welcome-title">Bienvenido al sistema de gestión académica</h1>
+  <p class="welcome-copy">
+    Administra la información de estudiantes y organiza sus inscripciones desde un solo lugar.
+  </p>
+</section>
+
+<section class="modules" aria-labelledby="modules-title">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">ACCESOS DIRECTOS</p>
+      <h2 id="modules-title">Módulos del sistema</h2>
+    </div>
+    <p>Selecciona un módulo para continuar.</p>
+  </div>
+
+  <div class="module-grid">
+    <a class="module-card" routerLink="/estudiantes">
+      <span class="module-icon students-icon"><mat-icon aria-hidden="true">groups</mat-icon></span>
+      <span class="module-card-copy">
+        <strong>Estudiantes</strong>
+        <span>Consulta y administra los registros estudiantiles.</span>
+      </span>
+      <mat-icon class="arrow-icon" aria-hidden="true">arrow_forward</mat-icon>
+    </a>
+
+    <a class="module-card" routerLink="/inscripciones">
+      <span class="module-icon enrollment-icon"><mat-icon aria-hidden="true">assignment</mat-icon></span>
+      <span class="module-card-copy">
+        <strong>Inscripciones</strong>
+        <span>Organiza cursos y períodos académicos.</span>
+      </span>
+      <mat-icon class="arrow-icon" aria-hidden="true">arrow_forward</mat-icon>
+    </a>
+  </div>
+</section>

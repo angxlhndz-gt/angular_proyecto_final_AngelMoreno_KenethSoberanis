@@ -1,0 +1,180 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.app-frame {
+  height: 100%;
+  background: #f5f7fb;
+}
+
+.app-sidenav {
+  width: 272px;
+  padding: 20px 14px 16px;
+  border-right: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 58px;
+  margin: 0 4px 32px;
+  color: #182338;
+  text-decoration: none;
+}
+
+.brand-mark {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  place-items: center;
+  border-radius: 13px;
+  background: #e8f1ff;
+  color: #1456a0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.brand-copy,
+.topbar-title {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.brand-copy strong {
+  font-size: 0.94rem;
+  font-weight: 650;
+}
+
+.brand-copy span,
+.navigation-caption,
+.topbar-kicker {
+  color: #738097;
+  font-size: 0.69rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+}
+
+.navigation-caption {
+  padding: 0 12px;
+  margin-bottom: 8px;
+}
+
+mat-nav-list a[mat-list-item] {
+  min-height: 48px;
+  margin: 4px 0;
+  border-radius: 10px;
+  color: #49566c;
+}
+
+mat-nav-list a[mat-list-item].is-active {
+  background: #eaf2ff;
+  color: #1456a0;
+  font-weight: 600;
+}
+
+mat-nav-list a[mat-list-item].is-active mat-icon {
+  color: #1456a0;
+}
+
+.sidenav-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 28px 8px 0;
+  padding: 16px 10px;
+  border-top: 1px solid #edf0f5;
+  color: #738097;
+  font-size: 0.8rem;
+}
+
+.sidenav-footer mat-icon {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+}
+
+.topbar {
+  position: sticky;
+  z-index: 2;
+  top: 0;
+  height: 74px;
+  min-height: 74px;
+  padding: 0 30px;
+  border-bottom: 1px solid #e7ebf1;
+  background: #fff;
+  color: #182338;
+}
+
+.topbar-title {
+  gap: 3px;
+}
+
+.topbar-kicker {
+  font-size: 0.62rem;
+}
+
+.topbar-heading {
+  font-size: 0.98rem;
+  font-weight: 600;
+}
+
+.topbar-spacer {
+  flex: 1;
+}
+
+.topbar-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #647187;
+  font-size: 0.8rem;
+}
+
+.topbar-status span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #28a56b;
+}
+
+.menu-button {
+  margin-right: 8px;
+}
+
+.page-container {
+  width: min(100%, 1280px);
+  min-height: calc(100% - 74px);
+  margin-inline: auto;
+  padding: clamp(20px, 4vw, 44px);
+}
+
+@media (max-width: 760px) {
+  .app-sidenav {
+    width: min(82vw, 300px);
+  }
+
+  .topbar {
+    height: 64px;
+    min-height: 64px;
+    padding-inline: 12px 18px;
+  }
+
+  .topbar-status {
+    font-size: 0;
+  }
+
+  .topbar-status span {
+    width: 10px;
+    height: 10px;
+  }
+
+  .page-container {
+    min-height: calc(100% - 64px);
+    padding: 20px 16px 32px;
+  }
+}
