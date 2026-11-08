@@ -1,0 +1,124 @@
+<section class="enrollment-page" aria-labelledby="enrollment-title">
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">MÓDULO DE INSCRIPCIONES</p>
+      <h1 id="enrollment-title">Registrar inscripción</h1>
+      <p class="page-description">Selecciona al estudiante, el período, sus cursos y el estado inicial.</p>
+    </div>
+  </header>
+
+  @if (students().length === 0) {
+    <aside class="notice" role="status">
+      <mat-icon aria-hidden="true">info</mat-icon>
+      <div>
+        <strong>Aún no hay estudiantes registrados.</strong>
+        <p>Registra un estudiante para poder crear una inscripción.</p>
+      </div>
+      <a mat-stroked-button routerLink="/estudiantes">Ir a Estudiantes</a>
+    </aside>
+  }
+
+  <form class="enrollment-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <section class="form-section" aria-labelledby="enrollment-data-title">
+      <div class="section-heading">
+        <span class="section-icon" aria-hidden="true"><mat-icon>assignment</mat-icon></span>
+        <div>
+          <h2 id="enrollment-data-title">Datos de la inscripción</h2>
+          <p>Los campos marcados son obligatorios.</p>
+        </div>
+      </div>
+
+      <div class="field-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Código de inscripción</mat-label>
+          <input matInput formControlName="id" placeholder="INS-001" autocomplete="off" />
+          @if (form.controls.id.hasError('required') && form.controls.id.touched) {
+            <mat-error>Ingresa el código de la inscripción.</mat-error>
+          } @else if (form.controls.id.hasError('pattern') && form.controls.id.touched) {
+            <mat-error>Usa el formato INS-001 (prefijo INS y al menos tres dígitos).</mat-error>
+          } @else if (form.controls.id.hasError('duplicate') && form.controls.id.touched) {
+            <mat-error>{{ duplicateIdError() }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Estudiante</mat-label>
+          <mat-select formControlName="studentId">
+            @for (student of students(); track student.id) {
+              <mat-option [value]="student.id">
+                {{ student.id }} — {{ student.firstNames }} {{ student.lastNames }}
+              </mat-option>
+            }
+          </mat-select>
+          @if (form.controls.studentId.hasError('required') && form.controls.studentId.touched) {
+            <mat-error>Selecciona un estudiante registrado.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Período académico</mat-label>
+          <mat-select formControlName="periodId">
+            @for (period of periods(); track period.id) {
+              <mat-option [value]="period.id">{{ period.name }}</mat-option>
+            }
+          </mat-select>
+          @if (form.controls.periodId.hasError('required') && form.controls.periodId.touched) {
+            <mat-error>Selecciona un período académico.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Cursos</mat-label>
+          <mat-select formControlName="courseIds" multiple>
+            @for (course of courses(); track course.id) {
+              <mat-option [value]="course.id">
+                {{ course.code }} — {{ course.name }} ({{ course.credits }} créditos)
+              </mat-option>
+            }
+          </mat-select>
+          @if (form.controls.courseIds.hasError('required') && form.controls.courseIds.touched) {
+            <mat-error>Selecciona al menos un curso.</mat-error>
+          }
+          <mat-hint>Puedes seleccionar varios cursos.</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Estado</mat-label>
+          <mat-select formControlName="status">
+            @for (status of statuses(); track status.id) {
+              <mat-option [value]="status.id">{{ status.label }}</mat-option>
+            }
+          </mat-select>
+          @if (form.controls.status.hasError('required') && form.controls.status.touched) {
+            <mat-error>Selecciona el estado de la inscripción.</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      @if (referenceErrors().length > 0) {
+        <div class="error-notice" role="alert">
+          <mat-icon aria-hidden="true">error_outline</mat-icon>
+          <ul>
+            @for (error of referenceErrors(); track error) {
+              <li>{{ error }}</li>
+            }
+          </ul>
+        </div>
+      }
+    </section>
+
+    <footer class="form-actions">
+      <button mat-flat-button color="primary" type="submit">
+        <mat-icon aria-hidden="true">save</mat-icon>
+        Registrar inscripción
+      </button>
+    </footer>
+  </form>
+
+  @if (storageError()) {
+    <p class="feedback error-feedback" role="alert">{{ storageError() }}</p>
+  }
+  @if (successMessage()) {
+    <p class="feedback success-feedback" role="status">{{ successMessage() }}</p>
+  }
+</section>

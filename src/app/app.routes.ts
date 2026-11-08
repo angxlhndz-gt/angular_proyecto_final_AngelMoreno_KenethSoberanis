@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { EnrollmentForm } from './features/enrollments/enrollment-form/enrollment-form';
 import { Home } from './features/home/home';
 import { StudentsPage } from './features/students/students-page/students-page';
 import { PagePlaceholder } from './shared/page-placeholder/page-placeholder';
@@ -16,13 +17,8 @@ export const routes: Routes = [
   },
   {
     path: 'inscripciones',
-    component: PagePlaceholder,
+    component: EnrollmentForm,
     title: 'Inscripciones | Gestión académica',
-    data: {
-      title: 'Inscripciones',
-      description: 'En este módulo podrás crear y consultar las inscripciones por período académico.',
-      icon: 'assignment',
-    },
   },
   {
     path: '**',
