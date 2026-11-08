@@ -1,124 +1,354 @@
 <section class="enrollment-page" aria-labelledby="enrollment-title">
-  <header class="page-heading">
-    <div>
-      <p class="eyebrow">MÓDULO DE INSCRIPCIONES</p>
-      <h1 id="enrollment-title">Registrar inscripción</h1>
-      <p class="page-description">Selecciona al estudiante, el período, sus cursos y el estado inicial.</p>
-    </div>
-  </header>
-
-  @if (students().length === 0) {
-    <aside class="notice" role="status">
-      <mat-icon aria-hidden="true">info</mat-icon>
+  @if (!showForm()) {
+    <header class="page-heading">
       <div>
-        <strong>Aún no hay estudiantes registrados.</strong>
-        <p>Registra un estudiante para poder crear una inscripción.</p>
+        <p class="eyebrow">MÓDULO DE INSCRIPCIONES</p>
+        <h1 id="enrollment-title">Inscripciones</h1>
+        <p class="page-description">Consulta, filtra y administra las inscripciones académicas.</p>
       </div>
-      <a mat-stroked-button routerLink="/estudiantes">Ir a Estudiantes</a>
-    </aside>
-  }
+      <button
+        mat-flat-button
+        type="button"
+        class="create-button"
+        [disabled]="!hasLoaded()"
+        (click)="openCreateForm()"
+      >
+        <mat-icon aria-hidden="true">add</mat-icon>
+        Nueva inscripción
+      </button>
+    </header>
 
-  <form class="enrollment-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-    <section class="form-section" aria-labelledby="enrollment-data-title">
-      <div class="section-heading">
-        <span class="section-icon" aria-hidden="true"><mat-icon>assignment</mat-icon></span>
-        <div>
-          <h2 id="enrollment-data-title">Datos de la inscripción</h2>
-          <p>Los campos marcados son obligatorios.</p>
-        </div>
-      </div>
+    @if (storageError()) {
+      <p class="feedback error-feedback" role="alert">{{ storageError() }}</p>
+    }
+    @if (successMessage()) {
+      <p class="feedback success-feedback" role="status">{{ successMessage() }}</p>
+    }
 
-      <div class="field-grid">
-        <mat-form-field appearance="outline">
-          <mat-label>Código de inscripción</mat-label>
-          <input matInput formControlName="id" placeholder="INS-001" autocomplete="off" />
-          @if (form.controls.id.hasError('required') && form.controls.id.touched) {
-            <mat-error>Ingresa el código de la inscripción.</mat-error>
-          } @else if (form.controls.id.hasError('pattern') && form.controls.id.touched) {
-            <mat-error>Usa el formato INS-001 (prefijo INS y al menos tres dígitos).</mat-error>
-          } @else if (form.controls.id.hasError('duplicate') && form.controls.id.touched) {
-            <mat-error>{{ duplicateIdError() }}</mat-error>
+    @if (!hasLoaded()) {
+      <section class="loading-state" role="status">Cargando inscripciones…</section>
+    } @else {
+      <div class="list-toolbar" role="group" aria-label="Filtros de inscripciones">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Buscar inscripciones</mat-label>
+          <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+          <input
+            matInput
+            type="search"
+            [value]="searchTerm()"
+            (input)="updateSearch($event)"
+            placeholder="Código, estudiante, período o curso"
+            autocomplete="off"
+          />
+          @if (searchTerm()) {
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              aria-label="Limpiar búsqueda"
+              (click)="clearSearch()"
+            >
+              <mat-icon aria-hidden="true">close</mat-icon>
+            </button>
           }
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" class="filter-field">
           <mat-label>Estudiante</mat-label>
-          <mat-select formControlName="studentId">
+          <mat-select
+            [value]="studentFilter()"
+            (selectionChange)="updateStudentFilter($event.value)"
+          >
+            <mat-option value="todos">Todos los estudiantes</mat-option>
             @for (student of students(); track student.id) {
               <mat-option [value]="student.id">
                 {{ student.id }} — {{ student.firstNames }} {{ student.lastNames }}
               </mat-option>
             }
           </mat-select>
-          @if (form.controls.studentId.hasError('required') && form.controls.studentId.touched) {
-            <mat-error>Selecciona un estudiante registrado.</mat-error>
-          }
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Período académico</mat-label>
-          <mat-select formControlName="periodId">
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Período</mat-label>
+          <mat-select
+            [value]="periodFilter()"
+            (selectionChange)="updatePeriodFilter($event.value)"
+          >
+            <mat-option value="todos">Todos los períodos</mat-option>
             @for (period of periods(); track period.id) {
               <mat-option [value]="period.id">{{ period.name }}</mat-option>
             }
           </mat-select>
-          @if (form.controls.periodId.hasError('required') && form.controls.periodId.touched) {
-            <mat-error>Selecciona un período académico.</mat-error>
-          }
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Cursos</mat-label>
-          <mat-select formControlName="courseIds" multiple>
-            @for (course of courses(); track course.id) {
-              <mat-option [value]="course.id">
-                {{ course.code }} — {{ course.name }} ({{ course.credits }} créditos)
-              </mat-option>
-            }
-          </mat-select>
-          @if (form.controls.courseIds.hasError('required') && form.controls.courseIds.touched) {
-            <mat-error>Selecciona al menos un curso.</mat-error>
-          }
-          <mat-hint>Puedes seleccionar varios cursos.</mat-hint>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" class="filter-field">
           <mat-label>Estado</mat-label>
-          <mat-select formControlName="status">
+          <mat-select
+            [value]="statusFilter()"
+            (selectionChange)="updateStatusFilter($event.value)"
+          >
+            <mat-option value="todos">Todos los estados</mat-option>
             @for (status of statuses(); track status.id) {
               <mat-option [value]="status.id">{{ status.label }}</mat-option>
             }
           </mat-select>
-          @if (form.controls.status.hasError('required') && form.controls.status.touched) {
-            <mat-error>Selecciona el estado de la inscripción.</mat-error>
-          }
         </mat-form-field>
       </div>
 
-      @if (referenceErrors().length > 0) {
-        <div class="error-notice" role="alert">
-          <mat-icon aria-hidden="true">error_outline</mat-icon>
-          <ul>
-            @for (error of referenceErrors(); track error) {
-              <li>{{ error }}</li>
-            }
-          </ul>
+      <div class="results-toolbar">
+        <p class="results-count" role="status">
+          {{ filteredEnrollments().length }}
+          {{ filteredEnrollments().length === 1 ? 'inscripción' : 'inscripciones' }}
+        </p>
+        @if (searchTerm() || studentFilter() !== 'todos' || periodFilter() !== 'todos' || statusFilter() !== 'todos') {
+          <button mat-button type="button" (click)="clearFilters()">
+            <mat-icon aria-hidden="true">filter_alt_off</mat-icon>
+            Limpiar filtros
+          </button>
+        }
+      </div>
+
+      @if (filteredEnrollments().length > 0) {
+        <div class="enrollment-list">
+          @for (enrollment of filteredEnrollments(); track enrollment.id) {
+            <article
+              class="enrollment-card"
+              [attr.aria-labelledby]="'enrollment-name-' + enrollment.id"
+            >
+              <div class="card-heading">
+                <div class="enrollment-identity">
+                  <span class="enrollment-code">{{ enrollment.id }}</span>
+                  <h2 [id]="'enrollment-name-' + enrollment.id">
+                    {{ studentName(enrollment.studentId) }}
+                  </h2>
+                </div>
+                <span class="status-badge" [attr.data-status]="enrollment.status">
+                  {{ statusLabel(enrollment.status) }}
+                </span>
+              </div>
+
+              <dl class="summary-grid">
+                <div>
+                  <dt>Estudiante</dt>
+                  <dd>{{ enrollment.studentId }}</dd>
+                </div>
+                <div>
+                  <dt>Período académico</dt>
+                  <dd>{{ periodName(enrollment.periodId) }}</dd>
+                </div>
+                <div class="courses-summary">
+                  <dt>Cursos</dt>
+                  <dd>{{ enrollment.courseIds.length }} seleccionados</dd>
+                </div>
+              </dl>
+
+              <div class="card-actions">
+                <button
+                  mat-button
+                  type="button"
+                  [attr.aria-expanded]="expandedEnrollmentId() === enrollment.id"
+                  [attr.aria-controls]="
+                    expandedEnrollmentId() === enrollment.id
+                      ? 'enrollment-details-' + enrollment.id
+                      : null
+                  "
+                  (click)="toggleDetails(enrollment.id)"
+                >
+                  <mat-icon aria-hidden="true">
+                    {{ expandedEnrollmentId() === enrollment.id ? 'expand_less' : 'expand_more' }}
+                  </mat-icon>
+                  {{ expandedEnrollmentId() === enrollment.id ? 'Ocultar' : 'Ver detalle' }}
+                </button>
+                <button
+                  mat-button
+                  type="button"
+                  [disabled]="enrollment.status === 'cancelada'"
+                  (click)="openEditForm(enrollment)"
+                >
+                  <mat-icon aria-hidden="true">edit</mat-icon>
+                  Editar
+                </button>
+                <button
+                  mat-button
+                  type="button"
+                  class="cancel-action"
+                  [disabled]="enrollment.status === 'cancelada'"
+                  (click)="confirmCancel(enrollment)"
+                >
+                  <mat-icon aria-hidden="true">event_busy</mat-icon>
+                  Cancelar inscripción
+                </button>
+              </div>
+
+              @if (expandedEnrollmentId() === enrollment.id) {
+                <div class="enrollment-details" [id]="'enrollment-details-' + enrollment.id">
+                  <h3>Cursos inscritos</h3>
+                  <ul>
+                    @for (course of enrollment.courseIds; track course) {
+                      <li>{{ courseLabel(course) }}</li>
+                    }
+                  </ul>
+                </div>
+              }
+            </article>
+          }
         </div>
+      } @else if (enrollments().length === 0) {
+        <section class="empty-state" aria-labelledby="empty-enrollments-title">
+          <span class="empty-icon" aria-hidden="true"><mat-icon>assignment_add</mat-icon></span>
+          <h2 id="empty-enrollments-title">Aún no hay inscripciones</h2>
+          <p>Registra la primera inscripción para comenzar a dar seguimiento a los cursos.</p>
+          <button mat-flat-button type="button" (click)="openCreateForm()">
+            <mat-icon aria-hidden="true">add</mat-icon>
+            Nueva inscripción
+          </button>
+        </section>
+      } @else {
+        <section class="empty-state search-empty" aria-live="polite">
+          <span class="empty-icon" aria-hidden="true"><mat-icon>search_off</mat-icon></span>
+          <h2>No encontramos coincidencias</h2>
+          <p>Prueba con otros criterios o limpia los filtros de búsqueda.</p>
+          <button mat-button type="button" (click)="clearFilters()">Limpiar filtros</button>
+        </section>
       }
+    }
+  } @else {
+    <section class="form-page" aria-labelledby="enrollment-title">
+      <header class="form-heading">
+        <button mat-button type="button" class="back-button" (click)="closeForm()">
+          <mat-icon aria-hidden="true">arrow_back</mat-icon>
+          Volver a inscripciones
+        </button>
+        <p class="eyebrow">MÓDULO DE INSCRIPCIONES</p>
+        <h1 id="enrollment-title">
+          {{ editingEnrollment() ? 'Editar inscripción' : 'Registrar inscripción' }}
+        </h1>
+        <p class="page-description">
+          Selecciona al estudiante, el período, sus cursos y el estado.
+        </p>
+      </header>
+
+      @if (students().length === 0) {
+        <aside class="notice" role="status">
+          <mat-icon aria-hidden="true">info</mat-icon>
+          <div>
+            <strong>Aún no hay estudiantes registrados.</strong>
+            <p>Registra un estudiante para poder crear una inscripción.</p>
+          </div>
+          <a mat-stroked-button routerLink="/estudiantes">Ir a Estudiantes</a>
+        </aside>
+      }
+
+      <form class="enrollment-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <section class="form-section" aria-labelledby="enrollment-data-title">
+          <div class="section-heading">
+            <span class="section-icon" aria-hidden="true"><mat-icon>assignment</mat-icon></span>
+            <div>
+              <h2 id="enrollment-data-title">Datos de la inscripción</h2>
+              <p>Los campos marcados son obligatorios.</p>
+            </div>
+          </div>
+
+          <div class="field-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Código de inscripción</mat-label>
+              <input
+                matInput
+                formControlName="id"
+                placeholder="INS-001"
+                autocomplete="off"
+                [readonly]="!!editingEnrollment()"
+              />
+              @if (form.controls.id.hasError('required') && form.controls.id.touched) {
+                <mat-error>Ingresa el código de la inscripción.</mat-error>
+              } @else if (form.controls.id.hasError('pattern') && form.controls.id.touched) {
+                <mat-error>Usa el formato INS-001 (prefijo INS y al menos tres dígitos).</mat-error>
+              } @else if (form.controls.id.hasError('duplicate') && form.controls.id.touched) {
+                <mat-error>{{ duplicateIdError() }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Estudiante</mat-label>
+              <mat-select formControlName="studentId">
+                @for (student of students(); track student.id) {
+                  <mat-option [value]="student.id">
+                    {{ student.id }} — {{ student.firstNames }} {{ student.lastNames }}
+                  </mat-option>
+                }
+              </mat-select>
+              @if (form.controls.studentId.hasError('required') && form.controls.studentId.touched) {
+                <mat-error>Selecciona un estudiante registrado.</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Período académico</mat-label>
+              <mat-select formControlName="periodId">
+                @for (period of periods(); track period.id) {
+                  <mat-option [value]="period.id">{{ period.name }}</mat-option>
+                }
+              </mat-select>
+              @if (form.controls.periodId.hasError('required') && form.controls.periodId.touched) {
+                <mat-error>Selecciona un período académico.</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Cursos</mat-label>
+              <mat-select formControlName="courseIds" multiple>
+                @for (course of courses(); track course.id) {
+                  <mat-option [value]="course.id">
+                    {{ course.code }} — {{ course.name }} ({{ course.credits }} créditos)
+                  </mat-option>
+                }
+              </mat-select>
+              @if (form.controls.courseIds.hasError('required') && form.controls.courseIds.touched) {
+                <mat-error>Selecciona al menos un curso.</mat-error>
+              }
+              <mat-hint>Puedes seleccionar varios cursos.</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Estado</mat-label>
+              <mat-select formControlName="status">
+                @for (status of formStatuses(); track status.id) {
+                  <mat-option [value]="status.id">{{ status.label }}</mat-option>
+                }
+              </mat-select>
+              @if (form.controls.status.hasError('required') && form.controls.status.touched) {
+                <mat-error>Selecciona el estado de la inscripción.</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          @if (referenceErrors().length > 0) {
+            <div class="error-notice" role="alert">
+              <mat-icon aria-hidden="true">error_outline</mat-icon>
+              <ul>
+                @for (error of referenceErrors(); track error) {
+                  <li>{{ error }}</li>
+                }
+              </ul>
+            </div>
+          }
+        </section>
+
+        @if (storageError()) {
+          <p class="feedback error-feedback form-feedback" role="alert">{{ storageError() }}</p>
+        }
+        @if (successMessage()) {
+          <p class="feedback success-feedback form-feedback" role="status">{{ successMessage() }}</p>
+        }
+
+        <footer class="form-actions">
+          <button mat-button type="button" (click)="closeForm()">Cancelar</button>
+          <button mat-flat-button color="primary" type="submit">
+            <mat-icon aria-hidden="true">save</mat-icon>
+            {{ editingEnrollment() ? 'Guardar cambios' : 'Registrar inscripción' }}
+          </button>
+        </footer>
+      </form>
     </section>
-
-    <footer class="form-actions">
-      <button mat-flat-button color="primary" type="submit">
-        <mat-icon aria-hidden="true">save</mat-icon>
-        Registrar inscripción
-      </button>
-    </footer>
-  </form>
-
-  @if (storageError()) {
-    <p class="feedback error-feedback" role="alert">{{ storageError() }}</p>
-  }
-  @if (successMessage()) {
-    <p class="feedback success-feedback" role="status">{{ successMessage() }}</p>
   }
 </section>

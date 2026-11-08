@@ -2,13 +2,18 @@
   display: block;
 }
 
-.enrollment-page {
-  max-width: 1050px;
+.enrollment-page,
+.form-page {
+  max-width: 1120px;
   margin: 0 auto;
 }
 
 .page-heading {
-  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
 }
 
 .eyebrow {
@@ -31,6 +36,270 @@ h1 {
   margin: 9px 0 0;
   color: #647187;
   line-height: 1.6;
+}
+
+.create-button {
+  min-height: 44px;
+  flex: 0 0 auto;
+}
+
+.list-toolbar {
+  display: grid;
+  grid-template-columns: minmax(210px, 1.6fr) repeat(3, minmax(150px, 1fr));
+  align-items: start;
+  gap: 12px;
+  margin-bottom: 0;
+}
+
+.search-field,
+.filter-field {
+  width: 100%;
+}
+
+.search-field mat-icon[matPrefix] {
+  margin-right: 8px;
+  color: #738097;
+}
+
+.results-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 42px;
+  margin: -8px 0 12px;
+}
+
+.results-count {
+  margin: 0;
+  color: #738097;
+  font-size: 0.85rem;
+}
+
+.results-toolbar button {
+  min-height: 38px;
+  color: #53627a;
+}
+
+.enrollment-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr));
+  align-items: start;
+  gap: 16px;
+}
+
+.enrollment-card {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.enrollment-identity {
+  min-width: 0;
+}
+
+.enrollment-code {
+  color: #356ba9;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.enrollment-card h2 {
+  margin: 6px 0 0;
+  color: #1f2b40;
+  font-size: 1.05rem;
+  font-weight: 650;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.status-badge {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #eef2f7;
+  color: #53627a;
+  font-size: 0.73rem;
+  font-weight: 650;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.status-badge[data-status='aprobada'] {
+  background: #eaf7f2;
+  color: #287c5a;
+}
+
+.status-badge[data-status='registrada'] {
+  background: #eaf2ff;
+  color: #245c9a;
+}
+
+.status-badge[data-status='en-revision'] {
+  background: #fff5df;
+  color: #865e0b;
+}
+
+.status-badge[data-status='rechazada'],
+.status-badge[data-status='cancelada'] {
+  background: #fff0f0;
+  color: #a83232;
+}
+
+.status-badge[data-status='borrador'] {
+  background: #f1effb;
+  color: #6756a2;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 18px;
+  margin: 18px 0 0;
+}
+
+.summary-grid dt {
+  margin-bottom: 4px;
+  color: #738097;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.summary-grid dd {
+  margin: 0;
+  color: #344258;
+  font-size: 0.87rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.courses-summary {
+  grid-column: 1 / -1;
+}
+
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid #edf0f5;
+}
+
+.card-actions button {
+  min-height: 40px;
+}
+
+.card-actions mat-icon {
+  margin-right: 3px;
+}
+
+.cancel-action {
+  color: #a83232;
+}
+
+.cancel-action:disabled {
+  color: #8490a2;
+}
+
+.enrollment-details {
+  margin-top: 14px;
+  padding-top: 16px;
+  border-top: 1px solid #edf0f5;
+}
+
+.enrollment-details h3 {
+  margin: 0 0 8px;
+  color: #344258;
+  font-size: 0.83rem;
+  font-weight: 650;
+}
+
+.enrollment-details ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 19px;
+  color: #53627a;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.loading-state {
+  padding: 28px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #fff;
+  color: #647187;
+  text-align: center;
+}
+
+.empty-state {
+  display: flex;
+  min-height: 300px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  border: 1px dashed #d8e0eb;
+  border-radius: 16px;
+  background: rgb(255 255 255 / 70%);
+  text-align: center;
+}
+
+.empty-icon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border-radius: 16px;
+  background: #eaf2ff;
+  color: #2464a6;
+}
+
+.empty-icon mat-icon {
+  width: 26px;
+  height: 26px;
+  font-size: 26px;
+}
+
+.empty-state h2 {
+  margin: 18px 0 8px;
+  color: #1f2b40;
+  font-size: 1.1rem;
+}
+
+.empty-state p {
+  max-width: 480px;
+  margin: 0 0 18px;
+  color: #738097;
+  line-height: 1.6;
+}
+
+.empty-state button {
+  min-height: 42px;
+}
+
+.form-heading {
+  margin-bottom: 22px;
+}
+
+.back-button {
+  margin: 0 0 20px -8px;
+  color: #53627a;
 }
 
 .enrollment-form {
@@ -89,6 +358,7 @@ h1 {
 .form-actions {
   display: flex;
   justify-content: flex-end;
+  gap: 8px;
   padding: 18px clamp(20px, 4vw, 32px);
   border-top: 1px solid #edf0f5;
   background: #fbfcfe;
@@ -148,11 +418,15 @@ h1 {
 }
 
 .feedback {
-  margin: 14px 0 0;
+  margin: 0 0 16px;
   padding: 12px 16px;
   border: 1px solid;
   border-radius: 10px;
   font-size: 0.9rem;
+}
+
+.form-feedback {
+  margin: 0 20px 16px;
 }
 
 .error-feedback {
@@ -165,6 +439,13 @@ h1 {
   border-color: #cce9d8;
   background: #effaf3;
   color: #246b45;
+}
+
+@media (max-width: 1050px) {
+  .list-toolbar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 12px;
+  }
 }
 
 @media (max-width: 760px) {
@@ -185,8 +466,67 @@ h1 {
   }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 640px) {
+  .page-heading {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .create-button {
+    width: 100%;
+  }
+
+  .list-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .results-toolbar {
+    align-items: flex-start;
+  }
+
+  .enrollment-card {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-heading {
+    flex-direction: column;
+  }
+
+  .card-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .card-actions .cancel-action {
+    grid-column: 1 / -1;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .courses-summary {
+    grid-column: auto;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
   .form-actions button {
     width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }
