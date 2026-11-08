@@ -3,10 +3,11 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   inject,
   signal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -15,6 +16,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { ContactType, Student, StudentGender } from '../../../core/models/student.model';
+import { ApplicationDataService } from '../../../core/services/application-data.service';
 import { CatalogService } from '../../../core/services/catalog.service';
 import { EnrollmentService } from '../../../core/services/enrollment.service';
 import { StudentService } from '../../../core/services/student.service';
@@ -37,6 +39,8 @@ import { StudentForm } from '../student-form/student-form';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StudentsPage {
+  private readonly applicationData = inject(ApplicationDataService);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly studentService = inject(StudentService);
   private readonly enrollmentService = inject(EnrollmentService);
   private readonly catalogService = inject(CatalogService);
@@ -77,6 +81,18 @@ export class StudentsPage {
   });
 
   constructor() {
+    this.applicationData.changes$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((change) => {
+        this.students.set(this.studentService.getAll());
+        this.hasLoaded.set(true);
+        if (change === 'replace') {
+          this.showForm.set(false);
+          this.editingStudent.set(null);
+          this.expandedStudentId.set(null);
+        }
+      });
+
     afterNextRender(() => {
       this.students.set(this.studentService.getAll());
       this.hasLoaded.set(true);

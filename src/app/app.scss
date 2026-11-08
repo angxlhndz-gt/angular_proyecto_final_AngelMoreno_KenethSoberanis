@@ -127,12 +127,29 @@ mat-nav-list a[mat-list-item].is-active mat-icon {
   flex: 1;
 }
 
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 12px;
+}
+
+.file-picker {
+  position: fixed;
+  top: 0;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.import-button,
 .export-button {
   min-height: 40px;
-  margin-right: 12px;
   color: #245c9a;
 }
 
+.import-button mat-icon,
 .export-button mat-icon {
   margin-right: 4px;
 }
@@ -178,16 +195,20 @@ mat-nav-list a[mat-list-item].is-active mat-icon {
     font-size: 0;
   }
 
-  .export-button {
-    min-width: 40px;
+  .toolbar-actions {
     margin-right: 8px;
+  }
+
+  .toolbar-actions button {
+    min-width: 40px;
     padding-inline: 8px;
   }
 
-  .export-button span {
+  .toolbar-actions button span {
     display: none;
   }
 
+  .import-button mat-icon,
   .export-button mat-icon {
     margin-right: 0;
   }

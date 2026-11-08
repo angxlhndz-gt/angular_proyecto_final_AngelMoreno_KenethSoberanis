@@ -1,18 +1,17 @@
 import { inject, Injectable } from '@angular/core';
 
 import { Student } from '../models/student.model';
-import { BrowserStorageService } from './browser-storage.service';
+import { ApplicationDataService } from './application-data.service';
 
 @Injectable({ providedIn: 'root' })
 export class StudentService {
-  private readonly storage = inject(BrowserStorageService);
-  private readonly storageKey = 'prograweb.students';
+  private readonly applicationData = inject(ApplicationDataService);
 
   getAll(): Student[] {
-    return this.storage.read<Student[]>(this.storageKey, () => []);
+    return this.applicationData.getAll().students;
   }
 
   saveAll(students: Student[]): boolean {
-    return this.storage.write(this.storageKey, students);
+    return this.applicationData.saveStudents(students);
   }
 }

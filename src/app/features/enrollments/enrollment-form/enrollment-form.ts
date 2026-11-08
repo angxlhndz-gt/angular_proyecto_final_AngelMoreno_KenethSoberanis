@@ -3,10 +3,11 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   inject,
   signal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -18,6 +19,7 @@ import { RouterLink } from '@angular/router';
 
 import { Enrollment, EnrollmentStatus } from '../../../core/models/enrollment.model';
 import { Student } from '../../../core/models/student.model';
+import { ApplicationDataService } from '../../../core/services/application-data.service';
 import { CatalogService } from '../../../core/services/catalog.service';
 import { EnrollmentService } from '../../../core/services/enrollment.service';
 import { StudentService } from '../../../core/services/student.service';
@@ -41,10 +43,12 @@ import { ConfirmDialog, ConfirmDialogData } from '../../../shared/confirm-dialog
 })
 export class EnrollmentForm {
   private readonly formBuilder = inject(FormBuilder).nonNullable;
+  private readonly applicationData = inject(ApplicationDataService);
   private readonly catalogService = inject(CatalogService);
   private readonly studentService = inject(StudentService);
   private readonly enrollmentService = inject(EnrollmentService);
   private readonly dialog = inject(MatDialog);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly students = signal<Student[]>([]);
   protected readonly enrollments = signal<Enrollment[]>([]);
@@ -112,6 +116,26 @@ export class EnrollmentForm {
   protected readonly successMessage = signal('');
 
   constructor() {
+    this.applicationData.changes$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((change) => {
+        this.students.set(this.studentService.getAll());
+        this.enrollments.set(this.sortEnrollments(this.enrollmentService.getAll()));
+        if (change === 'replace') {
+          this.showForm.set(false);
+          this.editingEnrollment.set(null);
+          this.expandedEnrollmentId.set(null);
+          this.form.reset({
+            id: '',
+            studentId: '',
+            periodId: '',
+            courseIds: [],
+            status: '' as EnrollmentStatus,
+          });
+          this.clearMessages();
+        }
+      });
+
     afterNextRender(() => {
       this.students.set(this.studentService.getAll());
       this.enrollments.set(this.sortEnrollments(this.enrollmentService.getAll()));
