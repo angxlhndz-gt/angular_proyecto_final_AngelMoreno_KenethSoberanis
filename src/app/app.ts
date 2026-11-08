@@ -12,9 +12,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+
+import { BackupService } from './core/services/backup.service';
 
 @Component({
   selector: 'app-root',
@@ -22,6 +25,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
     MatButtonModule,
     MatIconModule,
     MatListModule,
+    MatSnackBarModule,
     MatSidenavModule,
     MatToolbarModule,
     RouterLink,
@@ -35,6 +39,8 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 export class App {
   private readonly breakpointObserver = inject(BreakpointObserver);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly backupService = inject(BackupService);
+  private readonly snackBar = inject(MatSnackBar);
 
   protected readonly isHandset = signal(false);
   protected readonly menuOpen = signal(false);
@@ -60,5 +66,16 @@ export class App {
 
   protected closeMenu(): void {
     this.menuOpen.set(false);
+  }
+
+  protected exportData(): void {
+    const exported = this.backupService.exportBackup();
+    this.snackBar.open(
+      exported
+        ? 'Respaldo JSON descargado con estudiantes e inscripciones.'
+        : 'No se pudo generar el archivo de respaldo en este entorno.',
+      'Cerrar',
+      { duration: 4500 },
+    );
   }
 }

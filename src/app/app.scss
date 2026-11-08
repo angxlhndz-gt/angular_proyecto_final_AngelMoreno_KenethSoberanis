@@ -127,6 +127,16 @@ mat-nav-list a[mat-list-item].is-active mat-icon {
   flex: 1;
 }
 
+.export-button {
+  min-height: 40px;
+  margin-right: 12px;
+  color: #245c9a;
+}
+
+.export-button mat-icon {
+  margin-right: 4px;
+}
+
 .topbar-status {
   display: inline-flex;
   align-items: center;
@@ -166,6 +176,20 @@ mat-nav-list a[mat-list-item].is-active mat-icon {
 
   .topbar-status {
     font-size: 0;
+  }
+
+  .export-button {
+    min-width: 40px;
+    margin-right: 8px;
+    padding-inline: 8px;
+  }
+
+  .export-button span {
+    display: none;
+  }
+
+  .export-button mat-icon {
+    margin-right: 0;
   }
 
   .topbar-status span {
