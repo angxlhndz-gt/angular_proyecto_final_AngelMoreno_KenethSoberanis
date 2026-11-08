@@ -1,0 +1,166 @@
+<section class="student-page" aria-labelledby="student-form-title">
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">MÓDULO DE ESTUDIANTES</p>
+      <h1 id="student-form-title">Registrar estudiante</h1>
+      <p class="page-description">Completa los datos personales y agrega sus medios de contacto.</p>
+    </div>
+  </header>
+
+  <form class="student-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <section class="form-section" aria-labelledby="personal-data-title">
+      <div class="section-heading">
+        <span class="section-icon" aria-hidden="true"><mat-icon>person</mat-icon></span>
+        <div>
+          <h2 id="personal-data-title">Datos personales</h2>
+          <p>Los campos marcados son obligatorios.</p>
+        </div>
+      </div>
+
+      <div class="field-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Código de estudiante</mat-label>
+          <input matInput formControlName="id" placeholder="EST-001" autocomplete="off" />
+          @if (form.controls.id.hasError('required') && form.controls.id.touched) {
+            <mat-error>Ingresa el código del estudiante.</mat-error>
+          } @else if (form.controls.id.hasError('pattern') && form.controls.id.touched) {
+            <mat-error>Usa el formato EST-001 (prefijo EST y al menos tres dígitos).</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Nombres</mat-label>
+          <input matInput formControlName="firstNames" autocomplete="given-name" />
+          @if (form.controls.firstNames.hasError('required') && form.controls.firstNames.touched) {
+            <mat-error>Ingresa al menos un nombre.</mat-error>
+          } @else if (form.controls.firstNames.hasError('minlength') && form.controls.firstNames.touched) {
+            <mat-error>Escribe al menos dos caracteres.</mat-error>
+          } @else if (form.controls.firstNames.hasError('maxlength') && form.controls.firstNames.touched) {
+            <mat-error>El máximo es de 80 caracteres.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Apellidos</mat-label>
+          <input matInput formControlName="lastNames" autocomplete="family-name" />
+          @if (form.controls.lastNames.hasError('required') && form.controls.lastNames.touched) {
+            <mat-error>Ingresa al menos un apellido.</mat-error>
+          } @else if (form.controls.lastNames.hasError('minlength') && form.controls.lastNames.touched) {
+            <mat-error>Escribe al menos dos caracteres.</mat-error>
+          } @else if (form.controls.lastNames.hasError('maxlength') && form.controls.lastNames.touched) {
+            <mat-error>El máximo es de 80 caracteres.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Fecha de nacimiento</mat-label>
+          <input matInput type="date" formControlName="birthDate" autocomplete="bday" />
+          @if (form.controls.birthDate.hasError('required') && form.controls.birthDate.touched) {
+            <mat-error>Selecciona la fecha de nacimiento.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Género</mat-label>
+          <mat-select formControlName="gender">
+            @for (gender of genders(); track trackOption($index, gender)) {
+              <mat-option [value]="gender.id">{{ gender.label }}</mat-option>
+            }
+          </mat-select>
+          @if (form.controls.gender.hasError('required') && form.controls.gender.touched) {
+            <mat-error>Selecciona una opción.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Correo electrónico</mat-label>
+          <input matInput type="email" formControlName="email" autocomplete="email" />
+          @if (form.controls.email.hasError('required') && form.controls.email.touched) {
+            <mat-error>Ingresa el correo electrónico.</mat-error>
+          } @else if (form.controls.email.hasError('email') && form.controls.email.touched) {
+            <mat-error>Escribe un correo con formato válido.</mat-error>
+          } @else if (form.controls.email.hasError('maxlength') && form.controls.email.touched) {
+            <mat-error>El máximo es de 120 caracteres.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>Dirección</mat-label>
+          <textarea matInput rows="2" formControlName="address" autocomplete="street-address"></textarea>
+          @if (form.controls.address.hasError('required') && form.controls.address.touched) {
+            <mat-error>Ingresa la dirección.</mat-error>
+          } @else if (form.controls.address.hasError('minlength') && form.controls.address.touched) {
+            <mat-error>Escribe al menos cinco caracteres.</mat-error>
+          } @else if (form.controls.address.hasError('maxlength') && form.controls.address.touched) {
+            <mat-error>El máximo es de 180 caracteres.</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </section>
+
+    <section class="form-section contacts-section" aria-labelledby="contacts-title">
+      <div class="section-heading contacts-heading">
+        <span class="section-icon contact-icon" aria-hidden="true"><mat-icon>call</mat-icon></span>
+        <div>
+          <h2 id="contacts-title">Contactos</h2>
+          <p>Agrega números de teléfono si deseas registrar medios de contacto.</p>
+        </div>
+        <button mat-stroked-button type="button" class="add-contact" (click)="addContact()">
+          <mat-icon aria-hidden="true">add</mat-icon>
+          Agregar contacto
+        </button>
+      </div>
+
+      <div formArrayName="contacts" class="contact-list">
+        @for (contact of contacts.controls; track $index; let i = $index) {
+          <div class="contact-row" [formGroupName]="i">
+            <mat-form-field appearance="outline">
+              <mat-label>Número de teléfono</mat-label>
+              <input matInput type="tel" formControlName="number" autocomplete="tel" />
+              @if (contact.get('number')?.hasError('required') && contact.get('number')?.touched) {
+                <mat-error>Ingresa el número.</mat-error>
+              } @else if (contact.get('number')?.hasError('pattern') && contact.get('number')?.touched) {
+                <mat-error>Usa entre 7 y 20 caracteres numéricos.</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Tipo de contacto</mat-label>
+              <mat-select formControlName="type">
+                @for (type of contactTypes(); track trackOption($index, type)) {
+                  <mat-option [value]="type.id">{{ type.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-checkbox formControlName="active">Activo</mat-checkbox>
+
+            <button
+              mat-icon-button
+              type="button"
+              class="remove-contact"
+              [attr.aria-label]="'Quitar contacto ' + (i + 1)"
+              (click)="removeContact(i)"
+            >
+              <mat-icon aria-hidden="true">delete_outline</mat-icon>
+            </button>
+          </div>
+        } @empty {
+          <p class="empty-contacts">Aún no agregas contactos.</p>
+        }
+      </div>
+    </section>
+
+    <footer class="form-actions">
+      <button mat-button type="button" (click)="reset()">Limpiar formulario</button>
+      <button mat-flat-button color="primary" type="submit">
+        <mat-icon aria-hidden="true">save</mat-icon>
+        Validar datos
+      </button>
+    </footer>
+  </form>
+
+  @if (validationMessage()) {
+    <p class="validation-message" role="status">{{ validationMessage() }}</p>
+  }
+</section>

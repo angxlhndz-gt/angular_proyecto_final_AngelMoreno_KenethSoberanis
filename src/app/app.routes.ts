@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { Home } from './features/home/home';
+import { StudentForm } from './features/students/student-form/student-form';
 import { PagePlaceholder } from './shared/page-placeholder/page-placeholder';
 
 export const routes: Routes = [
@@ -10,13 +11,8 @@ export const routes: Routes = [
   },
   {
     path: 'estudiantes',
-    component: PagePlaceholder,
+    component: StudentForm,
     title: 'Estudiantes | Gestión académica',
-    data: {
-      title: 'Estudiantes',
-      description: 'En este módulo podrás consultar y administrar los datos de los estudiantes.',
-      icon: 'groups',
-    },
   },
   {
     path: 'inscripciones',
