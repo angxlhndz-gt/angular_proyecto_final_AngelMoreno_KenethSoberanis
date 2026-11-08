@@ -25,17 +25,26 @@
       <div class="field-grid">
         <mat-form-field appearance="outline">
           <mat-label>Código de estudiante</mat-label>
-          <input matInput formControlName="id" placeholder="EST-001" autocomplete="off" />
+          <input
+            matInput
+            required
+            formControlName="id"
+            placeholder="EST-001"
+            autocomplete="off"
+            (input)="studentIdChange.emit()"
+          />
           @if (form.controls.id.hasError('required') && form.controls.id.touched) {
             <mat-error>Ingresa el código del estudiante.</mat-error>
           } @else if (form.controls.id.hasError('pattern') && form.controls.id.touched) {
             <mat-error>Usa el formato EST-001 (prefijo EST y al menos tres dígitos).</mat-error>
+          } @else if (form.controls.id.hasError('server') && form.controls.id.touched) {
+            <mat-error>{{ idError() }}</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Nombres</mat-label>
-          <input matInput formControlName="firstNames" autocomplete="given-name" />
+          <input matInput required formControlName="firstNames" autocomplete="given-name" />
           @if (form.controls.firstNames.hasError('required') && form.controls.firstNames.touched) {
             <mat-error>Ingresa al menos un nombre.</mat-error>
           } @else if (form.controls.firstNames.hasError('pattern') && form.controls.firstNames.touched) {
@@ -49,7 +58,7 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Apellidos</mat-label>
-          <input matInput formControlName="lastNames" autocomplete="family-name" />
+          <input matInput required formControlName="lastNames" autocomplete="family-name" />
           @if (form.controls.lastNames.hasError('required') && form.controls.lastNames.touched) {
             <mat-error>Ingresa al menos un apellido.</mat-error>
           } @else if (form.controls.lastNames.hasError('pattern') && form.controls.lastNames.touched) {
@@ -63,7 +72,7 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Fecha de nacimiento</mat-label>
-          <input matInput type="date" formControlName="birthDate" autocomplete="bday" />
+          <input matInput required type="date" formControlName="birthDate" autocomplete="bday" />
           @if (form.controls.birthDate.hasError('required') && form.controls.birthDate.touched) {
             <mat-error>Selecciona la fecha de nacimiento.</mat-error>
           }
@@ -71,7 +80,7 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Género</mat-label>
-          <mat-select formControlName="gender">
+          <mat-select required formControlName="gender">
             @for (gender of genders(); track trackOption($index, gender)) {
               <mat-option [value]="gender.id">{{ gender.label }}</mat-option>
             }
@@ -83,7 +92,7 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Correo electrónico</mat-label>
-          <input matInput type="email" formControlName="email" autocomplete="email" />
+          <input matInput required type="email" formControlName="email" autocomplete="email" />
           @if (form.controls.email.hasError('required') && form.controls.email.touched) {
             <mat-error>Ingresa el correo electrónico.</mat-error>
           } @else if (form.controls.email.hasError('email') && form.controls.email.touched) {
@@ -95,7 +104,13 @@
 
         <mat-form-field class="full-width" appearance="outline">
           <mat-label>Dirección</mat-label>
-          <textarea matInput rows="2" formControlName="address" autocomplete="street-address"></textarea>
+          <textarea
+            matInput
+            required
+            rows="2"
+            formControlName="address"
+            autocomplete="street-address"
+          ></textarea>
           @if (form.controls.address.hasError('required') && form.controls.address.touched) {
             <mat-error>Ingresa la dirección.</mat-error>
           } @else if (form.controls.address.hasError('pattern') && form.controls.address.touched) {
@@ -127,7 +142,7 @@
           <div class="contact-row" [formGroupName]="i">
             <mat-form-field appearance="outline">
               <mat-label>Número de teléfono</mat-label>
-              <input matInput type="tel" formControlName="number" autocomplete="tel" />
+              <input matInput required type="tel" formControlName="number" autocomplete="tel" />
               @if (contact.get('number')?.hasError('required') && contact.get('number')?.touched) {
                 <mat-error>Ingresa el número.</mat-error>
               } @else if (contact.get('number')?.hasError('pattern') && contact.get('number')?.touched) {
@@ -137,14 +152,22 @@
 
             <mat-form-field appearance="outline">
               <mat-label>Tipo de contacto</mat-label>
-              <mat-select formControlName="type">
+              <mat-select required formControlName="type">
                 @for (type of contactTypes(); track trackOption($index, type)) {
                   <mat-option [value]="type.id">{{ type.label }}</mat-option>
                 }
               </mat-select>
+              @if (contact.get('type')?.hasError('required') && contact.get('type')?.touched) {
+                <mat-error>Selecciona el tipo de contacto.</mat-error>
+              }
             </mat-form-field>
 
-            <mat-checkbox formControlName="active">Activo</mat-checkbox>
+            <mat-checkbox
+              formControlName="active"
+              [attr.aria-label]="'Contacto ' + (i + 1) + ': activo o inactivo'"
+            >
+              Activo
+            </mat-checkbox>
 
             <button
               mat-icon-button
@@ -164,7 +187,7 @@
 
     <footer class="form-actions">
       <button mat-button type="button" (click)="reset()">Restablecer</button>
-      <button mat-button type="button" (click)="studentCancel.emit()">Cancelar</button>
+      <button mat-button type="button" (click)="cancel()">Cancelar</button>
       <button mat-flat-button color="primary" type="submit">
         <mat-icon aria-hidden="true">save</mat-icon>
         {{ student() ? 'Guardar cambios' : 'Guardar estudiante' }}

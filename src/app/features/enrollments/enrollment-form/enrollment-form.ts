@@ -172,6 +172,35 @@ export class EnrollmentForm {
   }
 
   protected closeForm(): void {
+    if (this.form.dirty) {
+      const dialogData: ConfirmDialogData = {
+        title: 'Descartar inscripción',
+        message: this.editingEnrollment()
+          ? 'Hay cambios sin guardar. ¿Quieres descartarlos y volver a la lista?'
+          : 'La inscripción no se ha guardado. ¿Quieres descartarla y volver a la lista?',
+        confirmLabel: 'Descartar y volver',
+      };
+
+      this.dialog
+        .open<ConfirmDialog, ConfirmDialogData, boolean>(ConfirmDialog, {
+          data: dialogData,
+          width: '420px',
+          maxWidth: 'calc(100vw - 32px)',
+        })
+        .afterClosed()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((confirmed) => {
+          if (confirmed) {
+            this.finishCloseForm();
+          }
+        });
+      return;
+    }
+
+    this.finishCloseForm();
+  }
+
+  private finishCloseForm(): void {
     this.showForm.set(false);
     this.editingEnrollment.set(null);
     this.clearMessages();

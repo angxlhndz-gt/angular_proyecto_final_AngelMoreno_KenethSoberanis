@@ -1,8 +1,10 @@
 @if (showForm()) {
   <app-student-form
     [student]="editingStudent()"
+    [idError]="studentIdError()"
     (studentSubmit)="saveStudent($event)"
-    (studentCancel)="closeForm()"
+    (studentCancel)="closeForm($event)"
+    (studentIdChange)="clearStudentIdError()"
   />
 } @else {
   <section class="students-page" aria-labelledby="students-title">

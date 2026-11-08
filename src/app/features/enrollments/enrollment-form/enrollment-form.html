@@ -228,7 +228,7 @@
         </p>
       </header>
 
-      @if (students().length === 0) {
+      @if (hasLoaded() && students().length === 0) {
         <aside class="notice" role="status">
           <mat-icon aria-hidden="true">info</mat-icon>
           <div>
@@ -254,6 +254,7 @@
               <mat-label>Código de inscripción</mat-label>
               <input
                 matInput
+                required
                 formControlName="id"
                 placeholder="INS-001"
                 autocomplete="off"
@@ -270,11 +271,15 @@
 
             <mat-form-field appearance="outline">
               <mat-label>Estudiante</mat-label>
-              <mat-select formControlName="studentId">
-                @for (student of students(); track student.id) {
-                  <mat-option [value]="student.id">
-                    {{ student.id }} — {{ student.firstNames }} {{ student.lastNames }}
-                  </mat-option>
+              <mat-select required formControlName="studentId">
+                @if (students().length > 0) {
+                  @for (student of students(); track student.id) {
+                    <mat-option [value]="student.id">
+                      {{ student.id }} — {{ student.firstNames }} {{ student.lastNames }}
+                    </mat-option>
+                  }
+                } @else {
+                  <mat-option disabled>No hay estudiantes registrados</mat-option>
                 }
               </mat-select>
               @if (form.controls.studentId.hasError('required') && form.controls.studentId.touched) {
@@ -284,9 +289,13 @@
 
             <mat-form-field appearance="outline">
               <mat-label>Período académico</mat-label>
-              <mat-select formControlName="periodId">
-                @for (period of periods(); track period.id) {
-                  <mat-option [value]="period.id">{{ period.name }}</mat-option>
+              <mat-select required formControlName="periodId">
+                @if (periods().length > 0) {
+                  @for (period of periods(); track period.id) {
+                    <mat-option [value]="period.id">{{ period.name }}</mat-option>
+                  }
+                } @else {
+                  <mat-option disabled>No hay períodos disponibles</mat-option>
                 }
               </mat-select>
               @if (form.controls.periodId.hasError('required') && form.controls.periodId.touched) {
@@ -296,24 +305,38 @@
 
             <mat-form-field appearance="outline">
               <mat-label>Cursos</mat-label>
-              <mat-select formControlName="courseIds" multiple>
-                @for (course of courses(); track course.id) {
-                  <mat-option [value]="course.id">
-                    {{ course.code }} — {{ course.name }} ({{ course.credits }} créditos)
-                  </mat-option>
+              <mat-select required formControlName="courseIds" multiple>
+                @if (courses().length > 0) {
+                  @for (course of courses(); track course.id) {
+                    <mat-option [value]="course.id">
+                      {{ course.code }} — {{ course.name }} ({{ course.credits }} créditos)
+                    </mat-option>
+                  }
+                } @else {
+                  <mat-option disabled>No hay cursos disponibles</mat-option>
                 }
               </mat-select>
               @if (form.controls.courseIds.hasError('required') && form.controls.courseIds.touched) {
                 <mat-error>Selecciona al menos un curso.</mat-error>
               }
-              <mat-hint>Puedes seleccionar varios cursos.</mat-hint>
+              <mat-hint>
+                @if (courses().length > 0) {
+                  Puedes seleccionar varios cursos.
+                } @else {
+                  Revisa que exista un catálogo de cursos.
+                }
+              </mat-hint>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
               <mat-label>Estado</mat-label>
-              <mat-select formControlName="status">
-                @for (status of formStatuses(); track status.id) {
-                  <mat-option [value]="status.id">{{ status.label }}</mat-option>
+              <mat-select required formControlName="status">
+                @if (formStatuses().length > 0) {
+                  @for (status of formStatuses(); track status.id) {
+                    <mat-option [value]="status.id">{{ status.label }}</mat-option>
+                  }
+                } @else {
+                  <mat-option disabled>No hay estados disponibles</mat-option>
                 }
               </mat-select>
               @if (form.controls.status.hasError('required') && form.controls.status.touched) {

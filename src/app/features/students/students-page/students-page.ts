@@ -52,6 +52,7 @@ export class StudentsPage {
   protected readonly searchTerm = signal('');
   protected readonly showForm = signal(false);
   protected readonly editingStudent = signal<Student | null>(null);
+  protected readonly studentIdError = signal('');
   protected readonly expandedStudentId = signal<string | null>(null);
   protected readonly genders = toSignal(this.catalogService.getGenders(), { initialValue: [] });
   protected readonly contactTypes = toSignal(this.catalogService.getContactTypes(), {
@@ -100,20 +101,53 @@ export class StudentsPage {
   }
 
   protected openCreateForm(): void {
+    this.studentIdError.set('');
     this.editingStudent.set(null);
     this.expandedStudentId.set(null);
     this.showForm.set(true);
   }
 
   protected openEditForm(student: Student): void {
+    this.studentIdError.set('');
     this.editingStudent.set(student);
     this.expandedStudentId.set(null);
     this.showForm.set(true);
   }
 
-  protected closeForm(): void {
+  protected closeForm(hasUnsavedChanges = false): void {
+    if (hasUnsavedChanges) {
+      const dialogData: ConfirmDialogData = {
+        title: 'Descartar cambios',
+        message: 'Hay cambios sin guardar. ¿Quieres descartarlos y cerrar el formulario?',
+        confirmLabel: 'Descartar cambios',
+      };
+
+      this.dialog
+        .open<ConfirmDialog, ConfirmDialogData, boolean>(ConfirmDialog, {
+          data: dialogData,
+          width: '420px',
+          maxWidth: 'calc(100vw - 32px)',
+        })
+        .afterClosed()
+        .subscribe((confirmed) => {
+          if (confirmed) {
+            this.finishCloseForm();
+          }
+        });
+      return;
+    }
+
+    this.finishCloseForm();
+  }
+
+  protected clearStudentIdError(): void {
+    this.studentIdError.set('');
+  }
+
+  private finishCloseForm(): void {
     this.showForm.set(false);
     this.editingStudent.set(null);
+    this.studentIdError.set('');
   }
 
   protected saveStudent(student: Student): void {
@@ -127,11 +161,7 @@ export class StudentsPage {
       duplicate?.id.trim().toUpperCase() === originalStudent?.id.trim().toUpperCase();
 
     if (duplicate && !isSameStudent) {
-      this.snackBar.open(
-        'El código ' + normalizedStudent.id + ' ya está asignado a otro estudiante.',
-        'Cerrar',
-        { duration: 5000 },
-      );
+      this.studentIdError.set('El código ' + normalizedStudent.id + ' ya está asignado a otro estudiante.');
       return;
     }
 
@@ -140,11 +170,7 @@ export class StudentsPage {
       originalStudent.id !== normalizedStudent.id &&
       this.hasEnrollments(originalStudent.id)
     ) {
-      this.snackBar.open(
-        'No se puede cambiar el código porque el estudiante tiene inscripciones asociadas.',
-        'Cerrar',
-        { duration: 6000 },
-      );
+      this.studentIdError.set('No se puede cambiar el código porque tiene inscripciones asociadas.');
       return;
     }
 
@@ -169,7 +195,7 @@ export class StudentsPage {
     }
 
     this.students.set(sortedStudents);
-    this.closeForm();
+    this.finishCloseForm();
     this.snackBar.open(
       originalStudent ? 'Estudiante actualizado.' : 'Estudiante registrado.',
       'Cerrar',

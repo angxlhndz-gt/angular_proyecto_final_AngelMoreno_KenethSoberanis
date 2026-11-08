@@ -53,8 +53,10 @@ export class StudentForm {
   private readonly catalogService = inject(CatalogService);
 
   readonly student = input<Student | null>(null);
+  readonly idError = input('');
   readonly studentSubmit = output<Student>();
-  readonly studentCancel = output<void>();
+  readonly studentCancel = output<boolean>();
+  readonly studentIdChange = output<void>();
   protected readonly validationMessage = signal('');
   protected readonly genders = toSignal(this.catalogService.getGenders(), { initialValue: [] });
   protected readonly contactTypes = toSignal(this.catalogService.getContactTypes(), {
@@ -101,14 +103,33 @@ export class StudentForm {
       student?.contacts.forEach((contact) => this.contacts.push(this.createContact(contact)));
       this.validationMessage.set('');
     });
+
+    effect(() => {
+      const control = this.form.controls.id;
+      const errors = { ...(control.errors ?? {}) };
+      delete errors['server'];
+
+      if (this.idError()) {
+        errors['server'] = true;
+        control.markAsTouched();
+      }
+
+      control.setErrors(Object.keys(errors).length > 0 ? errors : null);
+    });
   }
 
   protected addContact(): void {
     this.contacts.push(this.createContact());
+    this.form.markAsDirty();
   }
 
   protected removeContact(index: number): void {
     this.contacts.removeAt(index);
+    this.form.markAsDirty();
+  }
+
+  protected cancel(): void {
+    this.studentCancel.emit(this.form.dirty);
   }
 
   protected submit(): void {
