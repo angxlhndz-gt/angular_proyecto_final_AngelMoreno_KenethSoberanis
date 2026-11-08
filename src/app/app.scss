@@ -154,21 +154,6 @@ mat-nav-list a[mat-list-item].is-active mat-icon {
   margin-right: 4px;
 }
 
-.topbar-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: #647187;
-  font-size: 0.8rem;
-}
-
-.topbar-status span {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #28a56b;
-}
-
 .menu-button {
   margin-right: 8px;
 }
@@ -191,10 +176,6 @@ mat-nav-list a[mat-list-item].is-active mat-icon {
     padding-inline: 12px 18px;
   }
 
-  .topbar-status {
-    font-size: 0;
-  }
-
   .toolbar-actions {
     margin-right: 8px;
   }
@@ -211,11 +192,6 @@ mat-nav-list a[mat-list-item].is-active mat-icon {
   .import-button mat-icon,
   .export-button mat-icon {
     margin-right: 0;
-  }
-
-  .topbar-status span {
-    width: 10px;
-    height: 10px;
   }
 
   .page-container {

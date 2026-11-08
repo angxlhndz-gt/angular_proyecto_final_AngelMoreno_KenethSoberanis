@@ -26,6 +26,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { CatalogOption } from '../../../core/models/catalog-option.model';
 import { ContactType, Student, StudentContact, StudentGender } from '../../../core/models/student.model';
 import { CatalogService } from '../../../core/services/catalog.service';
+import { CONTACT_NUMBER_PATTERN } from '../../../core/validation/contact-number';
 
 type ContactFormGroup = FormGroup<{
   number: FormControl<string>;
@@ -178,7 +179,7 @@ export class StudentForm {
     return this.formBuilder.group({
       number: [
         contact?.number ?? '',
-        [Validators.required, Validators.pattern(/^[+0-9() -]{7,20}$/)],
+        [Validators.required, Validators.pattern(CONTACT_NUMBER_PATTERN)],
       ],
       type: this.formBuilder.control<ContactType>(contact?.type ?? 'movil', Validators.required),
       active: contact?.active ?? true,

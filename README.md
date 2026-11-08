@@ -53,36 +53,3 @@ Los formularios usan Reactive Forms. Los componentes solicitan y guardan registr
 Estudiantes e inscripciones se guardan localmente en el navegador mediante `ApplicationDataService` y `BrowserStorageService`. Los datos no se sincronizan entre navegadores ni computadoras. Usa **Exportar datos** para guardar un respaldo y conservar una copia fuera del navegador.
 
 Los catálogos se leen desde `public/data/`. Los cursos y períodos disponibles para las inscripciones dependen de esos archivos.
-
-## Demostración de exportación e importación
-
-1. Inicia la aplicación y registra al menos un estudiante en **Estudiantes**. Para demostrar las relaciones, registra también una inscripción con un período y uno o más cursos disponibles.
-2. Selecciona **Exportar datos** en la barra superior. El navegador descargará un archivo como `prograweb-respaldo-AAAA-MM-DD.json` con formato `prograweb-backup`, versión `1`, fecha de exportación, estudiantes e inscripciones.
-3. Cambia algún dato desde la aplicación —por ejemplo, registra otro estudiante— para distinguir los datos actuales del respaldo.
-4. Selecciona **Importar datos**, elige el archivo exportado y revisa el conteo que presenta la confirmación. Elige **Reemplazar datos**. Comprueba que la aplicación vuelva a mostrar los registros que contenía el respaldo.
-5. Para probar un archivo inválido, crea `respaldo-invalido.json` con este contenido. Es JSON sintácticamente válido, pero usa una versión no compatible:
-
-```json
-{
-  "format": "prograweb-backup",
-  "version": 99,
-  "exportedAt": "2026-01-01T00:00:00.000Z",
-  "students": [],
-  "enrollments": []
-}
-```
-
-6. Importa `respaldo-invalido.json`. La aplicación debe indicar que no importó el archivo. Verifica que los registros actuales sigan intactos.
-
-## Revisión manual final del equipo
-
-Ambos integrantes deben revisar la aplicación en sus propios navegadores y completar la lista juntos. Usen registros de demostración y comprueben la persistencia después de recargar la página.
-
-- [ ] **Integrante 1:** revisar creación, consulta, edición, búsqueda y eliminación de estudiantes; comprobar que no se eliminen estudiantes vinculados a inscripciones.
-- [ ] **Integrante 2:** revisar creación, búsqueda, filtros, edición y cancelación de inscripciones.
-- [ ] **Ambos:** probar exportación, importación válida e inválida; confirmar que un archivo inválido no reemplaza los datos.
-- [ ] **Ambos:** revisar mensajes, confirmaciones, navegación con teclado y presentación en teléfono, tableta y escritorio.
-
-Integrante 1: ______________________________  Fecha: ______________
-
-Integrante 2: ______________________________  Fecha: ______________

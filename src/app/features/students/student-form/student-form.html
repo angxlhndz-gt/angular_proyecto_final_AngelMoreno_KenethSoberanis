@@ -146,7 +146,7 @@
               @if (contact.get('number')?.hasError('required') && contact.get('number')?.touched) {
                 <mat-error>Ingresa el número.</mat-error>
               } @else if (contact.get('number')?.hasError('pattern') && contact.get('number')?.touched) {
-                <mat-error>Usa entre 7 y 20 caracteres numéricos.</mat-error>
+                <mat-error>Usa entre 7 y 15 dígitos; puedes incluir +, paréntesis, espacios o guiones.</mat-error>
               }
             </mat-form-field>
 

@@ -6,6 +6,7 @@ import {
   BackupValidationResult,
 } from '../models/application-backup.model';
 import { CatalogService } from './catalog.service';
+import { CONTACT_NUMBER_PATTERN } from '../validation/contact-number';
 
 interface BackupCatalogs {
   genders: Set<string>;
@@ -54,7 +55,7 @@ export class BackupValidationService {
 
       return referenceErrors.length > 0
         ? { valid: false, errors: referenceErrors }
-        : { valid: true, data: backup };
+        : { valid: true, data: this.normalizeStudentReferences(backup) };
     } catch {
       return {
         valid: false,
@@ -183,8 +184,11 @@ export class BackupValidationService {
 
         this.checkExactKeys(contact, ['number', 'type', 'active'], contactLabel, errors);
         const number = this.requiredText(contact, 'number', contactLabel + ': número', errors, 7, 20);
-        if (number && !/^[+0-9() -]{7,20}$/.test(number)) {
-          this.addError(errors, contactLabel + ': el número contiene caracteres no válidos.');
+        if (number && !CONTACT_NUMBER_PATTERN.test(number)) {
+          this.addError(
+            errors,
+            contactLabel + ': usa entre 7 y 15 dígitos, con separadores telefónicos permitidos.',
+          );
         }
         const contactType = contact['type'];
         if (typeof contactType !== 'string' || !contactType.trim()) {
@@ -297,6 +301,21 @@ export class BackupValidationService {
     });
 
     return errors;
+  }
+
+  private normalizeStudentReferences(backup: ApplicationBackup): ApplicationBackup {
+    return {
+      ...backup,
+      students: backup.students.map((student) => ({
+        ...student,
+        id: student.id.trim().toUpperCase(),
+      })),
+      enrollments: backup.enrollments.map((enrollment) => ({
+        ...enrollment,
+        id: enrollment.id.trim().toUpperCase(),
+        studentId: enrollment.studentId.trim().toUpperCase(),
+      })),
+    };
   }
 
   private requiredText(
